@@ -1,5 +1,36 @@
 [[package]]
 category = "main"
+description = "Library to provide a cross-platform GPIO interface on the Raspberry Pi and Beaglebone Black using the RPi.GPIO and Adafruit_BBIO libraries."
+name = "adafruit-gpio"
+optional = false
+python-versions = "*"
+version = "1.0.3"
+
+[package.dependencies]
+adafruit-pureio = "*"
+spidev = "*"
+
+[[package]]
+category = "main"
+description = "Python code to use the MCP3008 analog to digital converter with a Raspberry Pi or BeagleBone black."
+name = "adafruit-mcp3008"
+optional = false
+python-versions = "*"
+version = "1.0.2"
+
+[package.dependencies]
+Adafruit-GPIO = ">=0.6.5"
+
+[[package]]
+category = "main"
+description = "Pure python (i.e. no native extensions) access to Linux IO    including I2C and SPI. Drop in replacement for smbus and spidev modules."
+name = "adafruit-pureio"
+optional = false
+python-versions = ">=3.5.0"
+version = "1.1.5"
+
+[[package]]
+category = "main"
 description = "Atomic file writes."
 marker = "sys_platform == \"win32\""
 name = "atomicwrites"
@@ -134,6 +165,14 @@ version = "1.15.0"
 
 [[package]]
 category = "main"
+description = "Python bindings for Linux SPI access through spidev"
+name = "spidev"
+optional = false
+python-versions = "*"
+version = "3.4"
+
+[[package]]
+category = "main"
 description = "Measures number of Terminal column cells of wide-character codes"
 name = "wcwidth"
 optional = false
@@ -154,10 +193,20 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "7c364ebb0f8f6edef2fe3f1c69b4a681999db506a131e1ea6020124cc3d9247f"
+content-hash = "4e6084b5fe6ea9ac2be812610bd9b4bbabfb2192897a99cad46b3232db5a9053"
 python-versions = "^3.7"
 
 [metadata.files]
+adafruit-gpio = [
+    {file = "Adafruit_GPIO-1.0.3.tar.gz", hash = "sha256:d6465b92c866c51ca8f3bc1e8f2ec36f5ccdb46d0fd54101c1109756d4a2dcd0"},
+]
+adafruit-mcp3008 = [
+    {file = "Adafruit_MCP3008-1.0.2-py2-none-any.whl", hash = "sha256:196a1a46186dc28351e0277b9e4b3c53ef4c224dbcfda2cfa483ff5ac45b492a"},
+    {file = "Adafruit_MCP3008-1.0.2.tar.gz", hash = "sha256:79a38083d71c48d16ba5f7a75cdb6c0a37a16aec506c88ae10341463af184c83"},
+]
+adafruit-pureio = [
+    {file = "Adafruit_PureIO-1.1.5.tar.gz", hash = "sha256:ebab172823f7249e02a644844a64e6dc2e4b3ded38ba42099068fd3e96623cfb"},
+]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
@@ -201,6 +250,9 @@ pytest = [
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
+spidev = [
+    {file = "spidev-3.4.tar.gz", hash = "sha256:4314e52f573d95233c907f307558893313a8a606e197e77bb711526b0e179e80"},
 ]
 wcwidth = [
     {file = "wcwidth-0.1.9-py2.py3-none-any.whl", hash = "sha256:cafe2186b3c009a04067022ce1dcd79cb38d8d65ee4f4791b8888d6599d1bbe1"},
