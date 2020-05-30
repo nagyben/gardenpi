@@ -8,10 +8,4 @@ SPI_DEVICE = 0
 MCP = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
 def readmcp():
-    print(MCP.read_adc(0))
-
-
-if __name__ == "__main__":
-    while True:
-        readmcp()
-        time.sleep(0.5)
+    return MCP.read_adc(0)

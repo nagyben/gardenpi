@@ -1,4 +1,8 @@
 import datetime
+import mcp
+import time
+import traceback
+
 def get_temperature_from_id(sensor_id: str):
     file = f"/sys/bus/w1/devices/28-00000{sensor_id}/w1_slave"
 
@@ -15,11 +19,24 @@ def get_temperature_from_id(sensor_id: str):
 def main():
     sensors = ["4cba936","4cdf645","4ce8778"]
     while True:
-        temps = []
-        for sensor in sensors:
-            temp = get_temperature_from_id(sensor)
-            temps.append(temp)
+        try:
+            temps = []
+            for sensor in sensors:
+                temp = get_temperature_from_id(sensor)
+                temps.append(temp)
 
-        print(f"{datetime.datetime.now()},{','.join(str(x) for x in temps)}")
-main()
+            lux = mcp.readmcp()
+
+            entry = f"{datetime.datetime.now()},{lux},{','.join(str(x) for x in temps)}"
+
+            with open("/home/pi/gardenpi.csv", "a") as f:
+                f.write(entry + "\n")
+
+            time.sleep(60)
+        except Exception as e:
+            with open("/home/pi/gardenpi.log", "a") as f:
+                f.write(traceback.format_exc())
+
+if __name__ == "__main__":
+    main()
 
