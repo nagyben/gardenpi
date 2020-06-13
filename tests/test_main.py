@@ -17,3 +17,20 @@ def test_get_temperature_from_id(sensor_output, expected):
         actual = main.get_temperature_from_id("4cdf645")
 
         assert actual == expected
+
+class MockMCP:
+    gen = (x for x in range(1, 6))
+    def readmcp(self, channel):
+        return next(self.gen)
+
+@mock.patch("time.sleep", new=mock.MagicMock())
+@mock.patch("main.mcp", new=MockMCP())
+def test_get_lux():
+    actual = main.get_lux()
+    assert actual == 3
+
+@mock.patch("time.sleep", new=mock.MagicMock())
+@mock.patch("main.mcp", new=MockMCP())
+def test_get_lux():
+    actual = main.get_moisture()
+    assert actual == 3

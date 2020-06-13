@@ -7,6 +7,11 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{")
 LOG = logging.getLogger(__name__)
 
+MCP_CHANNELS = {
+    "lux": 0,
+    "moisture": 6
+}
+
 def get_temperature_from_id(sensor_id: str):
     file = f"/sys/bus/w1/devices/28-00000{sensor_id}/w1_slave"
 
@@ -26,16 +31,24 @@ def get_cpu_temp():
         return float(contents) / 1000
 
 
-def get_lux():
-    NUM_LUX_SAMPLES = 5
-
+def get_lux(num_samples: int = 5) -> float:
     lux_samples = []
 
-    for _ in range(NUM_LUX_SAMPLES):
-        lux_samples.append(mcp.readmcp())
+    for _ in range(num_samples):
+        lux_samples.append(mcp.readmcp(MCP_CHANNELS["lux"]))
         time.sleep(0.1)
 
     return sum(lux_samples) / len(lux_samples)
+
+
+def get_moisture(num_samples: int = 5) -> float:
+    moisture_samples = []
+
+    for _ in range(num_samples):
+        moisture_samples.append(mcp.readmcp(MCP_CHANNELS["moisture"]))
+        time.sleep(0.1)
+
+    return sum(moisture_samples) / len(moisture_samples)
 
 
 def main():
@@ -49,9 +62,11 @@ def main():
 
             lux = get_lux()
 
+            moisture = get_moisture()
+
             cpu_temp = get_cpu_temp()
 
-            entry = f"{datetime.datetime.now()},{lux},{','.join(str(x) for x in temps)},{cpu_temp}"
+            entry = f"{datetime.datetime.now()},{lux},{','.join(str(x) for x in temps)},{cpu_temp},{moisture}"
 
             with open("/home/pi/gardenpi.csv", "a") as f:
                 f.write(entry + "\n")
