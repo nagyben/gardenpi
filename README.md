@@ -10,6 +10,14 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 
 ### Install dependencies
 
+Install BLAS (see [here](https://numpy.org/devdocs/user/troubleshooting-importerror.html))
+
+```
+sudo apt-get install libatlas-base-dev
+```
+
+Install pip dependencies
+
 ```
 poetry install
 ```
