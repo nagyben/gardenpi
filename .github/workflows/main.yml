@@ -22,11 +22,11 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Get dependencies
-      uses: actions/setup-python@v2
+    - uses: actions/setup-python@v2
       with:
         python-version: '3.7'
-      run: |
+    - name: Get dependencies
+    - run: |
         curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
         source $HOME/.poetry/env
         poetry install
