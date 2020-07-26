@@ -1,5 +1,4 @@
 import controllers
-import unittest
 import unittest.mock as mock
 import pytest
 
@@ -22,10 +21,10 @@ def sensors():
 def test_init_control_pins(control_pin, raises, wiringpi):
     if raises:
         with pytest.raises(ValueError):
-            heater_controller = controllers.HeaterController(control_pin=control_pin)
+            controllers.HeaterController(control_pin=control_pin)
 
     else:
-        heater_controller = controllers.HeaterController(control_pin=control_pin)
+        controllers.HeaterController(control_pin=control_pin)
         wiringpi.pinMode.assert_called_with(control_pin, wiringpi.OUTPUT)
         wiringpi.pullUpDnControl.assert_called_with(control_pin, wiringpi.PUD_DOWN)
 

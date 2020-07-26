@@ -34,6 +34,9 @@ class BaseController:
     def hysteresis(self, hystersis):
         self._hysteresis = hystersis
 
+    def state(self):
+        raise NotImplementedError("subclass must override state()")
+
 
 class HeaterController(BaseController):
     class State(enum.Enum):
@@ -73,3 +76,6 @@ class HeaterController(BaseController):
         if temp >= target_point:
             wiringpi.digitalWrite(self._control_pin, wiringpi.LOW)
             self._state = HeaterController.State.COOLING
+
+    def state(self) -> int:
+        return self._state.value

@@ -3,3 +3,6 @@ test:
 
 format:
 	poetry run python -m black .
+
+check:
+	poetry run python -m prospector

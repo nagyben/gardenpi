@@ -3,6 +3,9 @@ import time
 import logging
 
 import sensors
+import controllers
+import wiringpi
+import typing
 
 logging.basicConfig(
     level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
@@ -11,15 +14,19 @@ LOG = logging.getLogger(__name__)
 
 SENSOR_INTERVAL = 300
 
+wiringpi.wiringPiSetupPhys()  # use physical pin mapping
+
 
 def main():
-    sensors = ["4cba936", "4cdf645", "4ce8778"]
+    heater_controller = controllers.HeaterController(control_pin=11)
+
+    main_loop(controllers=[heater_controller])
+
+
+def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
     while True:
         try:
-            temps = []
-            for sensor in sensors:
-                temp = sensors.get_temperature_from_id(sensor)
-                temps.append(temp)
+            temps = sensors.get_all_temperatures()
 
             lux = sensors.get_lux()
 
@@ -27,7 +34,10 @@ def main():
 
             cpu_temp = sensors.get_cpu_temp()
 
-            entry = f"{datetime.datetime.now()},{lux},{','.join(str(x) for x in temps)},{cpu_temp},{moisture}"
+            for controller in controllers:
+                controller.control()
+
+            entry = f"{datetime.datetime.now()},{lux},{','.join(str(temps[key]) for key in temps.keys())},{cpu_temp},{moisture}"
 
             with open("/home/pi/gardenpi.csv", "a") as f:
                 f.write(entry + "\n")

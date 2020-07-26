@@ -1,0 +1,14 @@
+strictness: medium
+test-warnings: true
+doc-warnings: true
+autodetect: false
+max-line-length: 120
+
+pep8:
+  run: false
+
+pylint:
+  run: false
+
+pep257:
+  run: false

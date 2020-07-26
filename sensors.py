@@ -1,5 +1,6 @@
 import time
 import numpy
+import typing
 
 import mcp
 
@@ -8,6 +9,18 @@ MCP_CHANNELS = {"lux": 0, "moisture": 6}
 EXTERNAL_TEMPERATURE_SENSOR_IDS = ["4cba936"]
 
 INTERNAL_TEMPERATURE_SENSOR_IDS = ["4cdf645", "4ce8778"]
+
+
+def get_all_temperatures() -> typing.Dict[str, float]:
+    retval = {}
+
+    all_sensors = EXTERNAL_TEMPERATURE_SENSOR_IDS
+    all_sensors.extend(INTERNAL_TEMPERATURE_SENSOR_IDS)
+
+    for sensor in all_sensors:
+        retval[sensor] = get_temperature_from_id(sensor)
+
+    return retval
 
 
 def get_temperature_from_id(sensor_id: str) -> float:
