@@ -25,14 +25,11 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '3.7'
-    - name: Get dependencies
+    - name: Test
       run: |
         curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
         source $HOME/.poetry/env
         poetry install
-
-    - name: Test
-      run: |
         make check
         make test
         make static-analysis
