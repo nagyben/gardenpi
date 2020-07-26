@@ -6,11 +6,15 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-pytest = "^5.4.2"
 adafruit-mcp3008 = "^1.0.2"
 flask = "^1.1.2"
+numpy = "^1.19.1"
 
 [tool.poetry.dev-dependencies]
+pytest = "^5.4.2"
+pytest-mypy = "^0.6.2"
+mypy = "^0.782"
+black = "^19.10"
 
 [build-system]
 requires = ["poetry>=0.12"]

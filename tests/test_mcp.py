@@ -2,9 +2,11 @@ import pytest
 import unittest.mock as mock
 import mcp
 
+
 class MockMCP:
     def read_adc(self, channel: int):
         return channel
+
 
 @mock.patch("mcp.MCP", new_callable=MockMCP)
 def test_readmcp(mock_mcp):
