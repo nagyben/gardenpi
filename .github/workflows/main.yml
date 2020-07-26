@@ -25,6 +25,7 @@ jobs:
     - name: Get dependencies
       run: |
         curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+        source $HOME/.poetry/env
         poetry install
 
     - name: Test
