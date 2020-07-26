@@ -9,6 +9,8 @@ logging.basicConfig(
 )
 LOG = logging.getLogger(__name__)
 
+SENSOR_INTERVAL = 300
+
 
 def main():
     sensors = ["4cba936", "4cdf645", "4ce8778"]
@@ -30,7 +32,7 @@ def main():
             with open("/home/pi/gardenpi.csv", "a") as f:
                 f.write(entry + "\n")
 
-            time.sleep(60)
+            time.sleep(SENSOR_INTERVAL)
         except Exception as e:
             LOG.exception(e)
 
