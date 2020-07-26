@@ -26,7 +26,7 @@ jobs:
       with:
         python-version: '3.7'
     - name: Get dependencies
-    - run: |
+      run: |
         curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
         source $HOME/.poetry/env
         poetry install
