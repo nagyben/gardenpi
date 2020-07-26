@@ -7,7 +7,7 @@ Description=GardenPi Service
 ExecStart=/home/pi/.cache/pypoetry/virtualenvs/gardenpi-aDWQq8rU-py3.7/bin/python /home/pi/gardenpi/main.py
 User=pi
 Restart=on-failure
-RestartSec=30
+RestartSec=60
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
 # service shows up immediately in systemd's logs
