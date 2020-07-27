@@ -25,7 +25,7 @@ timers: typing.Dict[str, datetime.datetime] = collections.defaultdict(
 
 def main():
     heater_controller = controllers.HeaterController(control_pin=11)
-    heater_controller.setpoint(18)
+    heater_controller.setpoint = 18
 
     main_loop(controllers=[heater_controller])
 
