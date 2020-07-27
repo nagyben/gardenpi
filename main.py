@@ -6,6 +6,7 @@ import sensors
 import controllers
 import wiringpi
 import typing
+import collections
 
 logging.basicConfig(
     level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
@@ -15,6 +16,10 @@ LOG = logging.getLogger(__name__)
 SENSOR_INTERVAL = 300
 
 wiringpi.wiringPiSetupPhys()  # use physical pin mapping
+
+timers: typing.Dict[str, datetime.datetime] = collections.defaultdict(
+    datetime.datetime.now
+)
 
 
 def main():
@@ -37,10 +42,9 @@ def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
             for controller in controllers:
                 controller.control()
 
-            entry = f"{datetime.datetime.now()},{lux},{','.join(str(temps[key]) for key in temps.keys())},{cpu_temp},{moisture}"
-
-            with open("/home/pi/gardenpi.csv", "a") as f:
-                f.write(entry + "\n")
+            log(
+                lux, *[temps[key] for key in temps.keys()], cpu_temp, moisture,
+            )
 
             time.sleep(SENSOR_INTERVAL)
         except Exception as e:
@@ -50,3 +54,10 @@ def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
 if __name__ == "__main__":
     LOG.info("Starting GardenPi")
     main()
+
+
+def log(*args) -> None:
+    entry = f"{datetime.datetime.now()},{','.join(str(x) for x in args)}"
+
+    with open("/home/pi/gardenpi.csv", "a") as f:
+        f.write(entry + "\n")
