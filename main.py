@@ -13,7 +13,8 @@ logging.basicConfig(
 )
 LOG = logging.getLogger(__name__)
 
-SENSOR_INTERVAL = 300
+CONTROL_INTERVAL = 10
+LOG_INTERVAL = 300
 
 wiringpi.wiringPiSetupPhys()  # use physical pin mapping
 
@@ -42,22 +43,19 @@ def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
             for controller in controllers:
                 controller.control()
 
-            log(
-                lux,
-                *[temps[key] for key in temps.keys()],
-                cpu_temp,
-                moisture,
-                *[controller.state() for controller in controllers],
-            )
+            if (datetime.datetime.now() - timers["log"]).seconds > LOG_INTERVAL:
+                timers["log"] = datetime.datetime.now()
+                log(
+                    lux,
+                    *[temps[key] for key in temps.keys()],
+                    cpu_temp,
+                    moisture,
+                    *[controller.state() for controller in controllers],
+                )
 
-            time.sleep(SENSOR_INTERVAL)
+            time.sleep(CONTROL_INTERVAL)
         except Exception as e:
             LOG.exception(e)
-
-
-if __name__ == "__main__":
-    LOG.info("Starting GardenPi")
-    main()
 
 
 def log(*args) -> None:
@@ -65,3 +63,8 @@ def log(*args) -> None:
 
     with open("/home/pi/gardenpi.csv", "a") as f:
         f.write(entry + "\n")
+
+
+if __name__ == "__main__":
+    LOG.info("Starting GardenPi")
+    main()
