@@ -61,7 +61,7 @@ class HeaterController(BaseController):
     def control(self):
         temp = sensors.get_temperature_from_id(sensor_id="4cdf645")
         target_point = None
-        print(f"state: {self._state}")
+        LOG.info(f"{self} state: {self._state}")
         if self._state == HeaterController.State.COOLING:
             target_point = self._setpoint - 0.5 * self._hysteresis
         else:
