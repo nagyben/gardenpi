@@ -67,8 +67,6 @@ class HeaterController(BaseController):
         else:
             target_point = self._setpoint + 0.5 * self._hysteresis
 
-        print(target_point)
-
         if temp < target_point:
             wiringpi.digitalWrite(self._control_pin, wiringpi.HIGH)
             self._state = HeaterController.State.HEATING

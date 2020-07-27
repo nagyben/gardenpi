@@ -43,7 +43,11 @@ def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
                 controller.control()
 
             log(
-                lux, *[temps[key] for key in temps.keys()], cpu_temp, moisture,
+                lux,
+                *[temps[key] for key in temps.keys()],
+                cpu_temp,
+                moisture,
+                *[controller.state() for controller in controllers],
             )
 
             time.sleep(SENSOR_INTERVAL)
