@@ -25,6 +25,7 @@ timers: typing.Dict[str, datetime.datetime] = collections.defaultdict(
 
 def main():
     heater_controller = controllers.HeaterController(control_pin=11)
+    heater_controller.setpoint(18)
 
     main_loop(controllers=[heater_controller])
 
@@ -59,6 +60,7 @@ def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
 
 
 def log(*args) -> None:
+    LOG.info("Writing log output...")
     entry = f"{datetime.datetime.now()},{','.join(str(x) for x in args)}"
 
     with open("/home/pi/gardenpi.csv", "a") as f:
