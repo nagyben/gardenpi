@@ -5,7 +5,7 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 adafruit-mcp3008 = { version = "^1.0.2", markers = "platform_machine == 'armv7l'"}
 numpy = "1.19.0"
 wiringpi = { version = "^2.60.0", markers = "platform_machine == 'armv7l'"}
