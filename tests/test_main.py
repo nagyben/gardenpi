@@ -32,5 +32,9 @@ def test_log(mock_datetime, mock_sensor, mock_controller):
     with mock.patch("main.open", mock.mock_open()) as mock_open:
         main.log(mock_sensor, mock_controller)
 
-        print(mock_open.mock_calls)
         mock_open().write.assert_called_with(f"{t},10,0\n")
+
+
+@mock.patch("main.loop", autospec=True)
+def test_main(mock_loop):
+    main.main()

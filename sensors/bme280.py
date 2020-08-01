@@ -1,8 +1,8 @@
 from sensors.base_sensor import BaseSensor
-import typing
+import typing_extensions
 
 
-class BME280Protocol(typing.Protocol):
+class BME280Protocol(typing_extensions.Protocol):
     def get_temperature(self):
         ...
 

@@ -1,8 +1,8 @@
 import sensors.base_sensor
-import typing
+import typing_extensions
 
 
-class MCPProtocol(typing.Protocol):
+class MCPProtocol(typing_extensions.Protocol):
     def read_adc(self, channel: int) -> int:
         ...
 

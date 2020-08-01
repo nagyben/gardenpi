@@ -10,6 +10,8 @@ import collections
 import typing
 import bme280
 import smbus2
+import Adafruit_GPIO.SPI
+import Adafruit_MCP3008
 
 LOG = logging.getLogger(__name__)
 
@@ -22,15 +24,34 @@ timers: typing.Dict[str, datetime.datetime] = collections.defaultdict(
     datetime.datetime.now
 )
 
+SPI_PORT = 0
+SPI_DEVICE = 0
+
 
 def main() -> None:
     t_bme280 = sensors.BME280_T(
         name="t_bme280", bme280_device=bme280.BME280(smbus2.SMBus(1))
     )
+    pressure = sensors.BME280_P(
+        name="pressure", bme280_device=bme280.BME280(smbus2.SMBus(1))
+    )
+    humidity = sensors.BME280_H(
+        name="humidity", bme280_device=bme280.BME280(smbus2.SMBus(1))
+    )
+    ambient_light = sensors.MCPSensor(
+        name="ambient_light",
+        mcp3xxx=Adafruit_MCP3008(spi=Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)),
+        channel=1,
+    )
+    t_ds18b20 = [
+        sensors.DS18B20(name="t_ds18b20_0", id=""),
+        sensors.DS18B20(name="t_ds18b20_1", id=""),
+        sensors.DS18B20(name="t_ds18b20_2", id=""),
+    ]
     heater_controller = controllers.HeaterController(control_pin=11, sensor=t_bme280)
     heater_controller.setpoint = 18
 
-    loop(process, controllers=[heater_controller])
+    loop(process, sensors=[*t_ds18b20, t_bme280,], controllers=[heater_controller])
 
 
 def loop(function: typing.Callable, *args, **kwargs) -> None:
