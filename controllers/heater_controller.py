@@ -2,40 +2,10 @@ import logging
 import wiringpi
 import sensors
 import enum
+from controllers.base_controller import BaseController
+from sensors.base_sensor import BaseSensor
 
 LOG = logging.getLogger(__name__)
-
-
-class BaseController:
-    _setpoint: float
-    _hysteresis: float
-
-    def __init__(self):
-        self._setpoint = 0.0
-        self._hysteresis = 0.0
-        self._state = None
-
-    @property
-    def setpoint(self) -> float:
-        return self._setpoint
-
-    @setpoint.setter
-    def setpoint(self, setpoint: float):
-        self._setpoint = setpoint
-
-    def control(self):
-        raise NotImplementedError("subclass must override control()")
-
-    @property
-    def hysteresis(self) -> float:
-        return self._hysteresis
-
-    @hysteresis.setter
-    def hysteresis(self, hystersis):
-        self._hysteresis = hystersis
-
-    def state(self):
-        raise NotImplementedError("subclass must override state()")
 
 
 class HeaterController(BaseController):
@@ -44,8 +14,9 @@ class HeaterController(BaseController):
         HEATING = 1
 
     _state: State
+    _sensor: BaseSensor
 
-    def __init__(self, control_pin: int):
+    def __init__(self, control_pin: int, sensor: BaseSensor):
         if 1 <= control_pin <= 40:
             self._control_pin = control_pin
             # set control pin as output
@@ -56,10 +27,11 @@ class HeaterController(BaseController):
         else:
             raise ValueError("Control pin must be an integer in the range [0, 40]")
 
-        return super().__init__()
+        self._sensor = sensor
+        super().__init__()
 
     def control(self):
-        temp = sensors.get_temperature_from_id(sensor_id="4cdf645")
+        temp = self._sensor.value
         target_point = None
         LOG.info(f"{self} state: {self._state}")
         if self._state == HeaterController.State.COOLING:

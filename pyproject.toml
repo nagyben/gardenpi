@@ -6,10 +6,9 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-adafruit-mcp3008 = "^1.0.2"
-flask = "^1.1.2"
+adafruit-mcp3008 = { version = "^1.0.2", markers = "platform_machine == 'armv7l'"}
 numpy = "1.19.0"
-wiringpi = "^2.60.0"
+wiringpi = { version = "^2.60.0", markers = "platform_machine == 'armv7l'"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"

@@ -8,9 +8,6 @@ import wiringpi
 import typing
 import collections
 
-logging.basicConfig(
-    level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
-)
 LOG = logging.getLogger(__name__)
 
 CONTROL_INTERVAL = 10
@@ -23,40 +20,38 @@ timers: typing.Dict[str, datetime.datetime] = collections.defaultdict(
 )
 
 
-def main():
+def main() -> None:
+
     heater_controller = controllers.HeaterController(control_pin=11)
     heater_controller.setpoint = 18
 
-    main_loop(controllers=[heater_controller])
+    loop(process, controllers=[heater_controller])
 
 
-def main_loop(controllers: typing.List[controllers.BaseController]) -> None:
+def loop(function: callable, *args, **kwargs) -> None:
     while True:
-        try:
-            temps = sensors.get_all_temperatures()
+        function(*args, **kwargs)
 
-            lux = sensors.get_lux()
 
-            moisture = sensors.get_moisture()
+def process(
+    sensors: typing.List[sensors.BaseSensor],
+    controllers: typing.List[controllers.BaseController],
+) -> None:
 
-            cpu_temp = sensors.get_cpu_temp()
+    for controller in controllers:
+        controller.control()
 
-            for controller in controllers:
-                controller.control()
+    if (datetime.datetime.now() - timers["log"]).seconds > LOG_INTERVAL:
+        timers["log"] = datetime.datetime.now()
+        log(
+            lux,
+            *[temps[key] for key in temps.keys()],
+            cpu_temp,
+            moisture,
+            *[controller.state() for controller in controllers],
+        )
 
-            if (datetime.datetime.now() - timers["log"]).seconds > LOG_INTERVAL:
-                timers["log"] = datetime.datetime.now()
-                log(
-                    lux,
-                    *[temps[key] for key in temps.keys()],
-                    cpu_temp,
-                    moisture,
-                    *[controller.state() for controller in controllers],
-                )
-
-            time.sleep(CONTROL_INTERVAL)
-        except Exception as e:
-            LOG.exception(e)
+    time.sleep(CONTROL_INTERVAL)
 
 
 def log(*args) -> None:
