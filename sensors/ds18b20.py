@@ -26,8 +26,6 @@ class DS18B20(BaseSensor):
             contents = f.read()
             start_pos = contents.find("t=")
 
-            print(start_pos)
-
             if start_pos < 0:
                 self._value = numpy.nan
 

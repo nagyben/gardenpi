@@ -29,15 +29,10 @@ SPI_DEVICE = 0
 
 
 def main() -> None:
-    t_bme280 = sensors.BME280_T(
-        name="t_bme280", bme280_device=bme280.BME280(smbus2.SMBus(1))
-    )
-    pressure = sensors.BME280_P(
-        name="pressure", bme280_device=bme280.BME280(smbus2.SMBus(1))
-    )
-    humidity = sensors.BME280_H(
-        name="humidity", bme280_device=bme280.BME280(smbus2.SMBus(1))
-    )
+    bus = smbus2.SMBus(1)
+    t_bme280 = sensors.BME280_T(name="t_bme280", bme280_device=bme280.BME280(bus))
+    pressure = sensors.BME280_P(name="pressure", bme280_device=bme280.BME280(bus))
+    humidity = sensors.BME280_H(name="humidity", bme280_device=bme280.BME280(bus))
     ambient_light = sensors.MCPSensor(
         name="ambient_light",
         mcp3xxx=Adafruit_MCP3008.MCP3008(
