@@ -20,7 +20,10 @@ class MCPSensor(sensors.base_sensor.BaseSensor):
 
     @property
     def value(self):
-        return self._mcp.read_adc(self._channel)
+        return self._value
+
+    def update(self):
+        self._value = self._mcp.read_adc(self._channel)
 
     @property
     def channel(self):

@@ -41,6 +41,7 @@ def test_device_not_found():
 def test_get_value(sensor_output, expected):
     t = DS18B20(name="t_ds18_0", id="abcdef12")
     with mock.patch("builtins.open", mock.mock_open(read_data=sensor_output)):
+        t.update()
         actual = t.value
 
         if numpy.isnan(expected):

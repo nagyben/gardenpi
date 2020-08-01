@@ -19,14 +19,20 @@ class DS18B20(BaseSensor):
 
     @property
     def value(self):
+        return self._value
+
+    def update(self):
         with open(self._device_path, "r") as f:
             contents = f.read()
             start_pos = contents.find("t=")
 
-            if start_pos < 0:
-                return numpy.nan
+            print(start_pos)
 
-            return float(contents[start_pos + 2 : -1]) / 1000
+            if start_pos < 0:
+                self._value = numpy.nan
+
+            else:
+                self._value = float(contents[start_pos + 2 : -1]) / 1000
 
     def _check_device_exists(self, id: str) -> bool:
         return pathlib.Path(f"/sys/bus/w1/devices/28-00000{id}/w1_slave").exists()

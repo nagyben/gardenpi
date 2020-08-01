@@ -10,5 +10,6 @@ class MockMCP:
 
 def test_mcp_sensor():
     m = MCPSensor(name="lux", mcp3xxx=MockMCP(), channel=0)
+    m.update()
 
     assert m.value == 0
