@@ -45,7 +45,7 @@ def main() -> None:
         mcp3xxx=Adafruit_MCP3008.MCP3008(
             spi=Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)
         ),
-        channel=1,
+        channel=0,
     )
 
     LOG.info("Setting up DS18B20 sensors...")
