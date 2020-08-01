@@ -40,7 +40,9 @@ def main() -> None:
     )
     ambient_light = sensors.MCPSensor(
         name="ambient_light",
-        mcp3xxx=Adafruit_MCP3008(spi=Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)),
+        mcp3xxx=Adafruit_MCP3008.MCP3008(
+            spi=Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)
+        ),
         channel=1,
     )
     t_ds18b20 = [
