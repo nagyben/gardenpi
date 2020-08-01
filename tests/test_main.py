@@ -36,5 +36,9 @@ def test_log(mock_datetime, mock_sensor, mock_controller):
 
 
 @mock.patch("main.loop", autospec=True)
+@mock.patch(
+    "sensors.ds18b20.DS18B20._check_device_exists",
+    new=mock.MagicMock(return_value=True),
+)
 def test_main(mock_loop):
     main.main()

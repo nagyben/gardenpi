@@ -44,14 +44,18 @@ def main() -> None:
         channel=1,
     )
     t_ds18b20 = [
-        sensors.DS18B20(name="t_ds18b20_0", id=""),
-        sensors.DS18B20(name="t_ds18b20_1", id=""),
-        sensors.DS18B20(name="t_ds18b20_2", id=""),
+        sensors.DS18B20(name="t_external", id="4cba936"),
+        sensors.DS18B20(name="t_internal_1", id="4cdf645"),
+        sensors.DS18B20(name="t_internal_2", id="4ce8778"),
     ]
     heater_controller = controllers.HeaterController(control_pin=11, sensor=t_bme280)
     heater_controller.setpoint = 18
 
-    loop(process, sensors=[*t_ds18b20, t_bme280,], controllers=[heater_controller])
+    loop(
+        process,
+        sensors=[*t_ds18b20, t_bme280, pressure, humidity, ambient_light],
+        controllers=[heater_controller],
+    )
 
 
 def loop(function: typing.Callable, *args, **kwargs) -> None:
