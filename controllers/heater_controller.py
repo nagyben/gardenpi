@@ -49,3 +49,7 @@ class HeaterController(BaseController):
 
     def state(self) -> int:
         return self._state.value
+
+    @property
+    def value(self):
+        return self.state()

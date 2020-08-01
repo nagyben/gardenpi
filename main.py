@@ -34,7 +34,7 @@ SPI_DEVICE = 0
 
 def main() -> None:
     LOG.info("Setting up BME280...")
-    bme280_device = bme280.BME280(smbus2.SMBus(1))
+    bme280_device = bme280.BME280(i2c_dev=smbus2.SMBus(1))
     t_bme280 = sensors.BME280_T(name="t_bme280", bme280_device=bme280_device)
     pressure = sensors.BME280_P(name="pressure", bme280_device=bme280_device)
     humidity = sensors.BME280_H(name="humidity", bme280_device=bme280_device)

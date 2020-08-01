@@ -110,3 +110,14 @@ def test_hysteresis_downwards(wiringpi):
     mock_sensor.value = 18.9
     heater_controller.control()
     wiringpi.digitalWrite.assert_called_with(1, wiringpi.HIGH)
+
+
+def test_get_value():
+    mock_sensor = mock.MagicMock()
+    heater_controller = HeaterController(control_pin=1, sensor=mock_sensor)
+    heater_controller.setpoint = 20
+    heater_controller.hysteresis = 2
+
+    mock_sensor.value = 22
+    heater_controller.control()
+    assert heater_controller.value == 0
