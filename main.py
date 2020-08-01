@@ -13,6 +13,10 @@ import smbus2
 import Adafruit_GPIO.SPI
 import Adafruit_MCP3008
 
+logging.basicConfig(
+    level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
+)
+
 LOG = logging.getLogger(__name__)
 
 CONTROL_INTERVAL = 10
