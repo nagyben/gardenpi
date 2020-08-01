@@ -28,3 +28,7 @@ class BaseController:
 
     def state(self):
         raise NotImplementedError("subclass must override state()")
+
+    @property
+    def value(self):
+        raise NotImplementedError("subclass must override property value")

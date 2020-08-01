@@ -22,18 +22,15 @@ class BME280Base(BaseSensor):
 
 
 class BME280_T(BME280Base):
-    @property
-    def value(self):
-        return self._bme280.get_temperature()
+    def update(self):
+        self._value = self._bme280.get_temperature()
 
 
 class BME280_P(BME280Base):
-    @property
-    def value(self):
-        return self._bme280.get_pressure()
+    def update(self):
+        self._value = self._bme280.get_pressure()
 
 
 class BME280_H(BME280Base):
-    @property
-    def value(self):
-        return self._bme280.get_humidity()
+    def update(self):
+        self._value = self._bme280.get_humidity()
