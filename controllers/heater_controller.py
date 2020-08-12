@@ -16,7 +16,7 @@ class HeaterController(BaseController):
     _state: State
     _sensor: BaseSensor
 
-    def __init__(self, control_pin: int, sensor: BaseSensor):
+    def __init__(self, name: str, control_pin: int, sensor: BaseSensor):
         if 1 <= control_pin <= 40:
             self._control_pin = control_pin
             # set control pin as output
@@ -28,7 +28,7 @@ class HeaterController(BaseController):
             raise ValueError("Control pin must be an integer in the range [0, 40]")
 
         self._sensor = sensor
-        super().__init__()
+        super().__init__(name)
 
     def control(self):
         temp = self._sensor.value

@@ -12,6 +12,7 @@ import bme280
 import smbus2
 import Adafruit_GPIO.SPI
 import Adafruit_MCP3008
+import pigpio
 
 logging.basicConfig(
     level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
@@ -50,14 +51,29 @@ def main() -> None:
 
     LOG.info("Setting up DS18B20 sensors...")
     t_ds18b20 = [
-        sensors.DS18B20(name="t_external", id="4cba936"),
-        sensors.DS18B20(name="t_internal_1", id="4cdf645"),
+        sensors.DS18B20(name="t_internal_1", id="4cba936"),
+        sensors.DS18B20(name="t_external", id="4cdf645"),
         sensors.DS18B20(name="t_internal_2", id="4ce8778"),
     ]
 
     LOG.info("Setting up heater controller...")
-    heater_controller = controllers.HeaterController(control_pin=11, sensor=t_bme280)
+    heater_controller = controllers.HeaterController(
+        name="heater", control_pin=11, sensor=t_bme280
+    )
     heater_controller.setpoint = 18
+
+    LOG.info("Setting up pi")
+    pi = pigpio.pi()
+
+    LOG.info("Setting up fan controller...")
+    fan_controller = controllers.FanController(name="fan", humidity_sensor=humidity, temperature_sensor=t_bme280)
+
+    LOG.info("Setting up vent controller...")
+    vent_controller = controllers.VentController(
+        name="vent", control_pin=18,  # BCM-style control pin
+        pi=pi,
+        fan_controller=fan_controller
+    )
 
     LOG.info("Starting main loop")
     loop(

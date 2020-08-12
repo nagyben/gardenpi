@@ -16,17 +16,23 @@ def wiringpi():
 def test_init_control_pins(control_pin, raises, wiringpi):
     if raises:
         with pytest.raises(ValueError):
-            HeaterController(control_pin=control_pin, sensor=mock.MagicMock())
+            HeaterController(
+                name="heater", control_pin=control_pin, sensor=mock.MagicMock()
+            )
 
     else:
-        HeaterController(control_pin=control_pin, sensor=mock.MagicMock())
+        HeaterController(
+            name="heater", control_pin=control_pin, sensor=mock.MagicMock()
+        )
         wiringpi.pinMode.assert_called_with(control_pin, wiringpi.OUTPUT)
         wiringpi.pullUpDnControl.assert_called_with(control_pin, wiringpi.PUD_DOWN)
 
 
 def test_temperature_below_setpoint_and_hysteresis(wiringpi):
     mock_sensor = mock.MagicMock()
-    heater_controller = HeaterController(control_pin=1, sensor=mock_sensor)
+    heater_controller = HeaterController(
+        name="heater", control_pin=1, sensor=mock_sensor
+    )
     heater_controller.setpoint = 20
     heater_controller.hysteresis = 2
 
@@ -37,7 +43,9 @@ def test_temperature_below_setpoint_and_hysteresis(wiringpi):
 
 def test_temperature_above_setpoint_and_hysteresis(wiringpi):
     mock_sensor = mock.MagicMock()
-    heater_controller = HeaterController(control_pin=1, sensor=mock_sensor)
+    heater_controller = HeaterController(
+        name="heater", control_pin=1, sensor=mock_sensor
+    )
     heater_controller.setpoint = 20
     heater_controller.hysteresis = 2
 
@@ -48,7 +56,9 @@ def test_temperature_above_setpoint_and_hysteresis(wiringpi):
 
 def test_hysteresis_upwards(wiringpi):
     mock_sensor = mock.MagicMock()
-    heater_controller = HeaterController(control_pin=1, sensor=mock_sensor)
+    heater_controller = HeaterController(
+        name="heater", control_pin=1, sensor=mock_sensor
+    )
     heater_controller.setpoint = 20
     heater_controller.hysteresis = 2
 
@@ -81,7 +91,9 @@ def test_hysteresis_upwards(wiringpi):
 
 def test_hysteresis_downwards(wiringpi):
     mock_sensor = mock.MagicMock()
-    heater_controller = HeaterController(control_pin=1, sensor=mock_sensor)
+    heater_controller = HeaterController(
+        name="heater", control_pin=1, sensor=mock_sensor
+    )
     heater_controller.setpoint = 20
     heater_controller.hysteresis = 2
 
@@ -114,7 +126,9 @@ def test_hysteresis_downwards(wiringpi):
 
 def test_get_value():
     mock_sensor = mock.MagicMock()
-    heater_controller = HeaterController(control_pin=1, sensor=mock_sensor)
+    heater_controller = HeaterController(
+        name="heater", control_pin=1, sensor=mock_sensor
+    )
     heater_controller.setpoint = 20
     heater_controller.hysteresis = 2
 

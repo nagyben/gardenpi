@@ -1,2 +1,4 @@
 from controllers.base_controller import BaseController
 from controllers.heater_controller import HeaterController
+from controllers.vent_controller import VentController
+from controllers.fan_controller import FanController

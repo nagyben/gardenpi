@@ -1,11 +1,12 @@
 class BaseController:
+    name: str
     _setpoint: float
     _hysteresis: float
 
-    def __init__(self):
+    def __init__(self, name: str):
         self._setpoint = 0.0
         self._hysteresis = 0.0
-        self._state = None
+        self.name = name
 
     @property
     def setpoint(self) -> float:
