@@ -13,11 +13,7 @@ class VentController(BaseController):
     _position: int = SERVO_OPEN
 
     def __init__(
-        self,
-        name: str,
-        control_pin: int,
-        fan_controller: BaseController,
-        pi,
+        self, name: str, control_pin: int, fan_controller: BaseController, pi,
     ):
         self._control_pin = control_pin
         self._fan_controller = fan_controller

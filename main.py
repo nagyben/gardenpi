@@ -62,17 +62,20 @@ def main() -> None:
     )
     heater_controller.setpoint = 18
 
-    LOG.info("Setting up pi")
+    LOG.info("Setting up pigpio")
     pi = pigpio.pi()
 
     LOG.info("Setting up fan controller...")
-    fan_controller = controllers.FanController(name="fan", humidity_sensor=humidity, temperature_sensor=t_bme280)
+    fan_controller = controllers.FanController(
+        name="fan", humidity_sensor=humidity, temperature_sensor=t_bme280, pi=pi
+    )
 
     LOG.info("Setting up vent controller...")
     vent_controller = controllers.VentController(
-        name="vent", control_pin=18,  # BCM-style control pin
+        name="vent",
+        control_pin=18,  # BCM-style control pin
         pi=pi,
-        fan_controller=fan_controller
+        fan_controller=fan_controller,
     )
 
     LOG.info("Starting main loop")
