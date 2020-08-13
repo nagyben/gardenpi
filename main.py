@@ -59,6 +59,14 @@ def main() -> None:
     pressure = sensors.BME280_P(name="pressure", bme280_device=bme280_device)
     humidity = sensors.BME280_H(name="humidity", bme280_device=bme280_device)
 
+    LOG.info("Stabilizing BME280...")
+    for i in range(3):
+        for sensor in [t_bme280, pressure, humidity]:
+            sensor.update()
+
+        LOG.info(f"{' '.join(str(sensor.value) for sensor in [t_bme280, pressure, humidity])}")
+        time.sleep(1)
+
     LOG.info("Setting up ambient light sensor...")
     ambient_light = sensors.MCPSensor(
         name="ambient_light",
