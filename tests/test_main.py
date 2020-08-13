@@ -1,5 +1,6 @@
-import main
+import sys
 import unittest.mock as mock
+import main
 import sensors.base_sensor
 import controllers.base_controller
 import pytest
@@ -35,10 +36,15 @@ def test_log(mock_datetime, mock_sensor, mock_controller):
         mock_open().write.assert_called_with(f"{t},10,0\n")
 
 
-@mock.patch("main.loop", autospec=True)
 @mock.patch(
     "sensors.ds18b20.DS18B20._check_device_exists",
     new=mock.MagicMock(return_value=True),
 )
-def test_main(mock_loop):
+@mock.patch("main.atexit")
+@mock.patch("main.Loop")
+@mock.patch("main.process")
+def test_main(process, loop, atexit):
     main.main()
+
+    loop.return_value.start.assert_called_once()
+    atexit.register.assert_called_once()

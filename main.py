@@ -13,6 +13,8 @@ import smbus2
 import Adafruit_GPIO.SPI
 import Adafruit_MCP3008
 import pigpio
+import threading
+import atexit
 
 logging.basicConfig(
     level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
@@ -20,7 +22,7 @@ logging.basicConfig(
 
 LOG = logging.getLogger(__name__)
 
-CONTROL_INTERVAL = 10
+LOOP_INTERVAL = 1
 LOG_INTERVAL = 300
 
 wiringpi.wiringPiSetupPhys()  # use physical pin mapping
@@ -31,6 +33,24 @@ timers: typing.Dict[str, datetime.datetime] = collections.defaultdict(
 
 SPI_PORT = 0
 SPI_DEVICE = 0
+
+
+class Loop(threading.Thread):
+    def __init__(
+        self, event: threading.Event, target: typing.Callable, *args, **kwargs
+    ):
+        threading.Thread.__init__(self)
+        self.stopped = event
+        self._args = args
+        self._kwargs = kwargs
+        self._target = target
+
+    def run(self):
+        while not self.stopped.wait(LOOP_INTERVAL):
+            self._target(*self._args, **self._kwargs)
+
+
+STOP_FLAG = threading.Event()
 
 
 def main() -> None:
@@ -67,7 +87,11 @@ def main() -> None:
 
     LOG.info("Setting up fan controller...")
     fan_controller = controllers.FanController(
-        name="fan", humidity_sensor=humidity, temperature_sensor=t_bme280, pi=pi
+        name="fan",
+        control_pin=18,
+        humidity_sensor=humidity,
+        temperature_sensor=t_bme280,
+        pi=pi,
     )
 
     LOG.info("Setting up vent controller...")
@@ -78,18 +102,27 @@ def main() -> None:
         fan_controller=fan_controller,
     )
 
-    LOG.info("Starting main loop")
-    loop(
-        process,
+    LOG.info("Starting control loop...")
+    looper = Loop(
+        event=STOP_FLAG,
+        target=process,
         sensors=[*t_ds18b20, t_bme280, pressure, humidity, ambient_light],
-        controllers=[heater_controller],
+        controllers=[heater_controller, vent_controller],
     )
+    looper.start()
+
+    atexit.register(on_exit, [looper])
 
 
-def loop(function: typing.Callable, *args, **kwargs) -> None:
-    while True:
-        function(*args, **kwargs)
-        time.sleep(CONTROL_INTERVAL)
+def on_exit(threads: typing.List[threading.Thread]):
+    LOG.info("Setting stop flag")
+    STOP_FLAG.set()
+
+    LOG.info("Waiting for threads to exit")
+    for thread in threads:
+        thread.join()
+
+    LOG.info("Goodbye")
 
 
 def process(
