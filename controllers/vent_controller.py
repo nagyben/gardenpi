@@ -2,7 +2,7 @@ from controllers.base_controller import BaseController
 from sensors.base_sensor import BaseSensor
 import time
 
-SERVO_OPEN = 2400
+SERVO_OPEN = 2300
 SERVO_CLOSED = 1500
 SERVO_TIME_STEP = 0.05
 
