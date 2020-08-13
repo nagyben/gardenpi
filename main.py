@@ -22,7 +22,7 @@ logging.basicConfig(
 LOG = logging.getLogger(__name__)
 
 LOOP_INTERVAL = 1
-LOG_INTERVAL = 300
+LOG_INTERVAL = 120
 
 wiringpi.wiringPiSetupPhys()  # use physical pin mapping
 
