@@ -16,7 +16,7 @@ import threading
 import atexit
 
 logging.basicConfig(
-    level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
+    level=logging.INFO, format="[{asctime}] {levelname} - {message}", style="{"
 )
 
 LOG = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ def process(
 
 
 def log(*args) -> None:
-    LOG.info("Writing log output...")
+    LOG.debug("Writing log output...")
     entry = f"{datetime.datetime.now()},{','.join(str(x.value) for x in args)}"
 
     with open("/home/pi/gardenpi.csv", "a") as f:
