@@ -20,6 +20,8 @@ class FanController(BaseController):
         self._temperature_sensor = temperature_sensor
         self._pi = pi
         self._kp = -2
+        self._pi.set_PWM_frequency(self._control_pin, 25_000)
+        self.set(0)
         super().__init__(name)
 
     def control(self) -> None:
@@ -29,8 +31,6 @@ class FanController(BaseController):
 
             # calculate error between setpoint and humidity sensor
             error = self._setpoint - self._humidity_sensor.value
-
-            print(error)
 
             fan_duty = self._kp * error
 

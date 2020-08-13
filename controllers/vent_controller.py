@@ -44,13 +44,11 @@ class VentController(BaseController):
     def _move_vent_to_position(self, target_position: int, time_to_open: float) -> None:
         movement = target_position - self._position
         step = movement / time_to_open * SERVO_TIME_STEP
-        print(f"step: {step}")
 
         while self._position != target_position:
             new_pos = self._pi.get_servo_pulsewidth(self._control_pin) + step
             self._pi.set_servo_pulsewidth(self._control_pin, new_pos)
             self._position = new_pos
-            print(f"_position: {self._position}")
             time.sleep(SERVO_TIME_STEP)
 
     @property
