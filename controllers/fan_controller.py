@@ -20,7 +20,7 @@ class FanController(BaseController):
         self._humidity_sensor = humidity_sensor
         self._temperature_sensor = temperature_sensor
         self._pi = pi
-        self._kp = -2
+        self._kp = -10
         self._pi.set_mode(self._control_pin, pigpio.OUTPUT)
         self._pi.set_PWM_frequency(self._control_pin, 25_000)
         self.set(0)
