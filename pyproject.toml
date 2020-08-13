@@ -11,6 +11,7 @@ numpy = "1.19.0"
 wiringpi = { version = "^2.60.0", markers = "platform_machine == 'armv7l'"}
 simple_pid = "^0.2.4"
 flask = "^1.1.2"
+pigpio = {version = "^1.46", platform = "armv7l"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"

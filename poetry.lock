@@ -328,6 +328,15 @@ version = "0.10.0"
 flake8-polyfill = ">=1.0.2,<2"
 
 [[package]]
+category = "main"
+description = "Raspberry Pi GPIO module"
+marker = "sys_platform == \"armv7l\""
+name = "pigpio"
+optional = false
+python-versions = "*"
+version = "1.46"
+
+[[package]]
 category = "dev"
 description = "plugin and hook calling mechanisms for python"
 name = "pluggy"
@@ -683,7 +692,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "4edded50cb0cddca3acc59155eff59b646d47df8991a6665078c052a8e0259cd"
+content-hash = "3704246bf612f2376d4a462cb9f774e04225b1e39280efb07a3012456eac851e"
 lock-version = "1.0"
 python-versions = "^3.7"
 
@@ -887,6 +896,10 @@ pathspec = [
 pep8-naming = [
     {file = "pep8-naming-0.10.0.tar.gz", hash = "sha256:f3b4a5f9dd72b991bf7d8e2a341d2e1aa3a884a769b5aaac4f56825c1763bf3a"},
     {file = "pep8_naming-0.10.0-py2.py3-none-any.whl", hash = "sha256:5d9f1056cb9427ce344e98d1a7f5665710e2f20f748438e308995852cfa24164"},
+]
+pigpio = [
+    {file = "pigpio-1.46-py2.py3-none-any.whl", hash = "sha256:8dbeb9445c128654e9368e8e1e4c4b06602b450e6556bebccc2efae82fb5dc85"},
+    {file = "pigpio-1.46.tar.gz", hash = "sha256:f5f2562f8f7aab0c6cf7235e501e72bedbf063efda725c6086c352b5e4b2f59d"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
