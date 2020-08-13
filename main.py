@@ -95,11 +95,13 @@ def main() -> None:
     LOG.info("Setting up fan controller...")
     fan_controller = controllers.FanController(
         name="fan",
-        control_pin=18,
+        control_pin=15,
         humidity_sensor=humidity,
         temperature_sensor=t_bme280,
         pi=pi,
     )
+
+    fan_controller.setpoint = 70
 
     LOG.info("Setting up vent controller...")
     vent_controller = controllers.VentController(
@@ -114,7 +116,7 @@ def main() -> None:
         event=STOP_FLAG,
         target=process,
         sensors=[*t_ds18b20, t_bme280, pressure, humidity, ambient_light],
-        controllers=[heater_controller, vent_controller],
+        controllers=[heater_controller, fan_controller, vent_controller],
     )
     looper.start()
 

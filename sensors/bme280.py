@@ -20,7 +20,6 @@ class BME280Base(BaseSensor):
         self._bme280 = bme280_device
         super().__init__(name)
 
-
 class BME280_T(BME280Base):
     def update(self):
         self._value = self._bme280.get_temperature()
