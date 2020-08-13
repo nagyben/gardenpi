@@ -24,6 +24,7 @@ class MockPi:
         return self._pwm
 
     set_PWM_frequency = mock.MagicMock()
+    set_mode = mock.MagicMock()
 
 
 @pytest.fixture
@@ -53,6 +54,7 @@ def test_fan_controller_init(humidity, temperature, pi):
 
     pi.set_PWM_frequency.assert_called_with(1, 25_000)
     pi.set_PWM_dutycycle.assert_called_with(1, 0)
+    pi.set_mode.assert_called_once()
 
 
 def test_fan_controller(fc):

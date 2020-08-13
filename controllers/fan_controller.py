@@ -1,5 +1,6 @@
 from controllers.base_controller import BaseController
 from sensors.base_sensor import BaseSensor
+import pigpio
 
 
 class FanController(BaseController):
@@ -20,6 +21,7 @@ class FanController(BaseController):
         self._temperature_sensor = temperature_sensor
         self._pi = pi
         self._kp = -2
+        self._pi.set_mode(self._control_pin, pigpio.OUTPUT)
         self._pi.set_PWM_frequency(self._control_pin, 25_000)
         self.set(0)
         super().__init__(name)
