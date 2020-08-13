@@ -1,6 +1,9 @@
 from controllers.base_controller import BaseController
 from sensors.base_sensor import BaseSensor
 import pigpio
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 class FanController(BaseController):
@@ -35,6 +38,8 @@ class FanController(BaseController):
             error = self._setpoint - self._humidity_sensor.value
 
             fan_duty = self._kp * error
+
+            LOG.debug(f"Fan duty: {fan_duty}")
 
             self.set(fan_duty)
 
