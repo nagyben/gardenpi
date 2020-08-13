@@ -7,7 +7,6 @@ import controllers
 import wiringpi
 import typing
 import collections
-import typing
 import bme280
 import smbus2
 import Adafruit_GPIO.SPI

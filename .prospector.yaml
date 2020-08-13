@@ -12,3 +12,5 @@ pylint:
 
 pep257:
   run: false
+
+strictness: low
