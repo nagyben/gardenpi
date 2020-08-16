@@ -64,7 +64,9 @@ def main() -> None:
         for sensor in [t_bme280, pressure, humidity]:
             sensor.update()
 
-        LOG.info(f"{' '.join(str(sensor.value) for sensor in [t_bme280, pressure, humidity])}")
+        LOG.info(
+            f"{' '.join(str(sensor.value) for sensor in [t_bme280, pressure, humidity])}"
+        )
         time.sleep(1)
 
     LOG.info("Setting up ambient light sensor...")
@@ -102,6 +104,7 @@ def main() -> None:
     )
 
     fan_controller.setpoint = 70
+    fan_controller.setpoint_temp = 28
 
     LOG.info("Setting up vent controller...")
     vent_controller = controllers.VentController(

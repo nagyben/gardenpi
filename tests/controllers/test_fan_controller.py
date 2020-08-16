@@ -59,7 +59,9 @@ def test_fan_controller_init(humidity, temperature, pi):
 
 def test_fan_controller(fc):
     fc.setpoint = 60
+    fc.setpoint_temp = 25
     fc._humidity_sensor.value = fc.setpoint
+    fc._temperature_sensor.value = 20
     fc.control()
 
     assert fc.value == 0
@@ -71,6 +73,10 @@ def test_fan_controller(fc):
     fc._humidity_sensor.value = 40
     fc.control()
     assert fc.value == 0
+
+    fc._temperature_sensor.value = 30
+    fc.control()
+    assert fc.value > 0
 
 
 def test_set(fc):

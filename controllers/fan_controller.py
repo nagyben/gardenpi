@@ -10,6 +10,7 @@ class FanController(BaseController):
     _humidity_sensor: BaseSensor
     _temperature_sensor: BaseSensor
     _auto: bool = True
+    _setpoint_temp: float
 
     def __init__(
         self,
@@ -24,6 +25,7 @@ class FanController(BaseController):
         self._temperature_sensor = temperature_sensor
         self._pi = pi
         self._kp = -10
+        self._kp_temp = -10
         self._pi.set_mode(self._control_pin, pigpio.OUTPUT)
         self._pi.set_PWM_frequency(self._control_pin, 25_000)
         self.set(0)
@@ -39,6 +41,11 @@ class FanController(BaseController):
 
             fan_duty = self._kp * error
 
+            # calculate error between setpoint and temperature sensor
+            error = self._setpoint_temp - self._temperature_sensor.value
+
+            fan_duty = max(fan_duty, self._kp_temp * error)
+
             LOG.debug(f"Fan duty: {fan_duty}")
 
             self.set(fan_duty)
@@ -50,3 +57,11 @@ class FanController(BaseController):
     @property
     def value(self) -> int:
         return int(self._pi.get_PWM_dutycycle(self._control_pin) * 100 / 255)
+
+    @property
+    def setpoint_temp(self) -> float:
+        return self._setpoint_temp
+
+    @setpoint_temp.setter
+    def setpoint_temp(self, setpoint: float) -> None:
+        self._setpoint_temp = setpoint
