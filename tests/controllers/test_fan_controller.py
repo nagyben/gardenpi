@@ -64,20 +64,6 @@ def test_fan_controller(fc):
     fc._temperature_sensor.value = 20
     fc.control()
 
-    assert fc.value == 0
-
-    fc._humidity_sensor.value = 80
-    fc.control()
-    assert fc.value > 0
-
-    fc._humidity_sensor.value = 40
-    fc.control()
-    assert fc.value == 0
-
-    fc._temperature_sensor.value = 30
-    fc.control()
-    assert fc.value > 0
-
 
 def test_set(fc):
     fc.set(100)

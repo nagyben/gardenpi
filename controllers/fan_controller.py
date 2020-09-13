@@ -2,6 +2,7 @@ from controllers.base_controller import BaseController
 from sensors.base_sensor import BaseSensor
 import pigpio
 import logging
+from simple_pid import PID
 
 LOG = logging.getLogger(__name__)
 
@@ -23,9 +24,11 @@ class FanController(BaseController):
         self._control_pin = control_pin
         self._humidity_sensor = humidity_sensor
         self._temperature_sensor = temperature_sensor
+        self._pid_h = PID(-10, 0.05, 0, setpoint=0)
+        self._pid_h.output_limits = (0, 100)
+        self._pid_t = PID(-10, 0.05, 0, setpoint=0)
+        self._pid_t.output_limits = (0, 100)
         self._pi = pi
-        self._kp = -10
-        self._kp_temp = -10
         self._pi.set_mode(self._control_pin, pigpio.OUTPUT)
         self._pi.set_PWM_frequency(self._control_pin, 25_000)
         self.set(0)
@@ -36,15 +39,13 @@ class FanController(BaseController):
             # do control things
             # simple proportional PID controller
 
-            # calculate error between setpoint and humidity sensor
-            error = self._setpoint - self._humidity_sensor.value
+            self._pid_t.setpoint = self._setpoint_temp
+            self._pid_h.setpoint = self._setpoint
 
-            fan_duty = self._kp * error
+            fan_duty_t = self._pid_t(self._temperature_sensor.value)
+            fan_duty_h = self._pid_t(self._humidity_sensor.value)
 
-            # calculate error between setpoint and temperature sensor
-            error = self._setpoint_temp - self._temperature_sensor.value
-
-            fan_duty = max(fan_duty, self._kp_temp * error)
+            fan_duty = max(fan_duty_t, fan_duty_h)
 
             LOG.debug(f"Fan duty: {fan_duty}")
 
