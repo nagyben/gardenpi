@@ -24,9 +24,9 @@ class FanController(BaseController):
         self._control_pin = control_pin
         self._humidity_sensor = humidity_sensor
         self._temperature_sensor = temperature_sensor
-        self._pid_h = PID(-10, 0.05, 0, setpoint=0)
+        self._pid_h = PID(-10, 0.05, 0, setpoint=0, sample_time=None)
         self._pid_h.output_limits = (0, 100)
-        self._pid_t = PID(-10, 0.05, 0, setpoint=0)
+        self._pid_t = PID(-10, 0.05, 0, setpoint=0, sample_time=None)
         self._pid_t.output_limits = (0, 100)
         self._pi = pi
         self._pi.set_mode(self._control_pin, pigpio.OUTPUT)
@@ -43,7 +43,7 @@ class FanController(BaseController):
             self._pid_h.setpoint = self._setpoint
 
             fan_duty_t = self._pid_t(self._temperature_sensor.value)
-            fan_duty_h = self._pid_t(self._humidity_sensor.value)
+            fan_duty_h = self._pid_h(self._humidity_sensor.value)
 
             fan_duty = max(fan_duty_t, fan_duty_h)
 
