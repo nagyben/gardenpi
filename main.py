@@ -103,7 +103,7 @@ def main() -> None:
         pi=pi,
     )
 
-    fan_controller.setpoint = 70
+    fan_controller.setpoint = 60
     fan_controller.setpoint_temp = 20
 
     LOG.info("Setting up vent controller...")
