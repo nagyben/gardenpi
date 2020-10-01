@@ -24,10 +24,10 @@ class FanController(BaseController):
         self._control_pin = control_pin
         self._humidity_sensor = humidity_sensor
         self._temperature_sensor = temperature_sensor
-        self._pid_h = PID(-10, 0, 0, setpoint=0, sample_time=None)
-        self._pid_h.output_limits = (0, 100)
+        self._pid_h = PID(-5, 0, 0, setpoint=0, sample_time=None)
+        self._pid_h.output_limits = (0, 70)
         self._pid_t = PID(-10, 0, 0, setpoint=0, sample_time=None)
-        self._pid_t.output_limits = (0, 100)
+        self._pid_t.output_limits = (0, 80)
         self._pi = pi
         self._pi.set_mode(self._control_pin, pigpio.OUTPUT)
         self._pi.set_PWM_frequency(self._control_pin, 25_000)
