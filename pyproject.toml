@@ -12,6 +12,7 @@ wiringpi = { version = "^2.60.0", markers = "platform_machine == 'armv7l'"}
 simple_pid = "^0.2.4"
 flask = "^1.1.2"
 pigpio = {version = "^1.46", markers = "platform_machine == 'armv7l'"}
+pymongo = "^3.11.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"
@@ -19,6 +20,7 @@ pytest-mypy = "^0.6.2"
 mypy = "^0.782"
 black = "^19.10b0"
 prospector = "^1.3.0"
+rope = "^0.18.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

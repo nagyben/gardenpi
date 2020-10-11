@@ -5,6 +5,7 @@ import sensors.base_sensor
 import controllers.base_controller
 import pytest
 import datetime
+import queue
 
 
 @pytest.fixture
@@ -24,16 +25,51 @@ def test_process(mock_sensor, mock_controller):
     main.process(sensors=[mock_sensor], controllers=[mock_controller])
 
 
+@mock.patch("concurrent.futures.ThreadPoolExecutor")
+@mock.patch("main.log_to_mongo")
 @mock.patch("main.datetime")
-def test_log(mock_datetime, mock_sensor, mock_controller):
+def test_log(mock_datetime, log_to_mongo, mock_threads, mock_sensor, mock_controller):
     mock_sensor.value = 10
+    mock_sensor.name = "sensor"
     mock_controller.value = 0
-    t = datetime.datetime.now()
-    mock_datetime.datetime.now.return_value = t
-    with mock.patch("main.open", mock.mock_open()) as mock_open:
-        main.log(mock_sensor, mock_controller)
+    mock_controller.name = "controller"
 
-        mock_open().write.assert_called_with(f"{t},10,0\n")
+    times = []
+    q = queue.Queue()
+    for _ in range(10):
+        times.append(datetime.datetime.now())
+        mock_datetime.datetime.now.return_value = times[-1]
+        main.log(mock_sensor, mock_controller)
+        q.put({
+                "timestamp": times[-1],
+                "controllers": {"controller": {"value": 0}},
+                "sensors": {"sensor": {"value": 10}},
+            })
+
+    mock_threads.submit.assert_called_with(main.log_to_mongo, q)
+
+@mock.patch("pymongo.MongoClient")
+def test_log_to_mongo(mock_mongo):
+    times = range(10)
+    q = queue.Queue()
+
+    [q.put({
+                "timestamp": times,
+                "controllers": {"controller": {"value": 0}},
+                "sensors": {"sensor": {"value": 10}},
+            }) for t in times]
+
+    mock_mongo.garden["greenhouse-data"].insert_many.assert_called_once_with(
+        [
+            {
+                "timestamp": t,
+                "controllers": {"controller": {"value": 0}},
+                "sensors": {"sensor": {"value": 10}},
+            }
+            for t in times
+        ]
+    )
+
 
 
 @mock.patch(
