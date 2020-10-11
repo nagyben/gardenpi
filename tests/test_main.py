@@ -24,50 +24,6 @@ def test_process(mock_sensor, mock_controller):
     mock_controller.value = 0
     main.process(sensors=[mock_sensor], controllers=[mock_controller])
 
-
-@mock.patch("concurrent.futures.ThreadPoolExecutor")
-@mock.patch("main.log_to_mongo")
-@mock.patch("main.datetime")
-def test_log(mock_datetime, log_to_mongo, mock_threads, mock_sensor, mock_controller):
-    mock_sensor.value = 10
-    mock_sensor.name = "sensor"
-    mock_controller.value = 0
-    mock_controller.name = "controller"
-
-    times = []
-    q = queue.Queue()
-    for _ in range(10):
-        times.append(datetime.datetime.now())
-        mock_datetime.datetime.now.return_value = times[-1]
-        main.log(mock_sensor, mock_controller)
-        q.put({
-                "timestamp": times[-1],
-                "controllers": {"controller": {"value": 0}},
-                "sensors": {"sensor": {"value": 10}},
-            })
-
-    mock_threads.submit.assert_called_with(main.log_to_mongo, q)
-
-@mongomock.patch(on_new="create")
-def test_log_to_mongo():
-    times = range(10)
-    q = queue.Queue()
-
-    [q.put({
-                "timestamp": t,
-                "controllers": {"controller": {"value": 0}},
-                "sensors": {"sensor": {"value": 10}},
-            }) for t in times]
-
-    main.log_to_mongo(q)
-
-    inserts = mongomock.MongoClient().greenhouse.data.find({})
-
-    for i, insert in enumerate(inserts):
-        assert insert["timestamp"] == times[i]
-
-
-
 @mock.patch(
     "sensors.ds18b20.DS18B20._check_device_exists",
     new=mock.MagicMock(return_value=True),

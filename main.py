@@ -164,12 +164,13 @@ def process(
 
 
 def log(*args) -> None:
+    print("herp")
     def ddict():
         return collections.defaultdict(ddict)
 
     log_entry = ddict()
 
-    for _ in range(LOG_BATCH_SIZE - 1):
+    def get_log_entry_from_args():
         for item in args:
             if isinstance(item, controllers.BaseController):
                 log_entry["controllers"][item.name]["value"] = item.value
@@ -180,11 +181,15 @@ def log(*args) -> None:
 
         log_entry["timestamp"] = datetime.datetime.now()
 
+        return log_entry
+
+    for _ in range(LOG_BATCH_SIZE - 1):
+        log_entry = get_log_entry_from_args()
         LOG_QUEUE.put(log_entry)
 
         yield
 
-
+    log_entry = get_log_entry_from_args()
 
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     executor.submit(log_to_mongo, LOG_QUEUE)
