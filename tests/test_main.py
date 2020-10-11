@@ -6,7 +6,7 @@ import controllers.base_controller
 import pytest
 import datetime
 import queue
-
+import mongomock
 
 @pytest.fixture
 def mock_sensor():
@@ -48,27 +48,23 @@ def test_log(mock_datetime, log_to_mongo, mock_threads, mock_sensor, mock_contro
 
     mock_threads.submit.assert_called_with(main.log_to_mongo, q)
 
-@mock.patch("pymongo.MongoClient")
-def test_log_to_mongo(mock_mongo):
+@mongomock.patch(on_new="create")
+def test_log_to_mongo():
     times = range(10)
     q = queue.Queue()
 
     [q.put({
-                "timestamp": times,
+                "timestamp": t,
                 "controllers": {"controller": {"value": 0}},
                 "sensors": {"sensor": {"value": 10}},
             }) for t in times]
 
-    mock_mongo.garden["greenhouse-data"].insert_many.assert_called_once_with(
-        [
-            {
-                "timestamp": t,
-                "controllers": {"controller": {"value": 0}},
-                "sensors": {"sensor": {"value": 10}},
-            }
-            for t in times
-        ]
-    )
+    main.log_to_mongo(q)
+
+    inserts = mongomock.MongoClient().greenhouse.data.find({})
+
+    for i, insert in enumerate(inserts):
+        assert insert["timestamp"] == times[i]
 
 
 

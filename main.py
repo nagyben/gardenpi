@@ -40,9 +40,7 @@ SPI_DEVICE = 0
 LOG_QUEUE = queue.Queue()
 LOG_BATCH_SIZE = 10
 
-MONGO_URL = os.environ.get("MONGO_URL")
-MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
-MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
+MONGO_URL = os.environ.get("MONGO_URL", "localhost")
 
 class Loop(threading.Thread):
     def __init__(
@@ -115,7 +113,7 @@ def main() -> None:
     )
 
     fan_controller.setpoint = 60
-    fan_controller.setpoint_temp = 20
+    fan_controller.setpoint_temp = 25
 
     LOG.info("Setting up vent controller...")
     vent_controller = controllers.VentController(
@@ -171,7 +169,7 @@ def log(*args) -> None:
 
     log_entry = ddict()
 
-    for _ in range(LOG_BATCH_SIZE):
+    for _ in range(LOG_BATCH_SIZE - 1):
         for item in args:
             if isinstance(item, controllers.BaseController):
                 log_entry["controllers"][item.name]["value"] = item.value
@@ -184,11 +182,9 @@ def log(*args) -> None:
 
         LOG_QUEUE.put(log_entry)
 
-        print("herp")
-
         yield
 
-    print(LOG_QUEUE.qsize())
+
 
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     executor.submit(log_to_mongo, LOG_QUEUE)
@@ -196,7 +192,7 @@ def log(*args) -> None:
 
 
 def log_to_mongo(q: queue.Queue):
-    client = pymongo.MongoClient(f"mongodb+srv://{MONGO_USERNAME}{MONGO_PASSWORD}@{MONGO_URL}/garden?retryWrites=true&w=majority")
+    client = pymongo.MongoClient(MONGO_URL)
 
     log_items = []
 
@@ -208,7 +204,7 @@ def log_to_mongo(q: queue.Queue):
 
     if len(log_items) > 0:
         LOG.debug(f"Inserting {len(log_items)} entries to db...")
-        client.garden["greenhouse-data"].insert_many(log_items)
+        client.greenhouse.data.insert_many(log_items)
 
     else:
         LOG.warning("No items to insert into db!")
