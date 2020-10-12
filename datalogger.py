@@ -63,7 +63,7 @@ class MongoDataLogger:
 
         if len(log_items) > 0:
             LOG.debug(f"Inserting {len(log_items)} entries to db...")
-            client.greenhouse.data.insert_many(log_items).inserted_ids
+            client.greenhouse.data.insert_many(log_items)
 
         else:
             LOG.warning("No items to insert into db!")
