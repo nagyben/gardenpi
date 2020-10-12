@@ -16,6 +16,7 @@ LOG = logging.getLogger(__name__)
 LOG_BATCH_SIZE = 10
 MONGO_URL = os.environ.get("MONGO_URL", "localhost")
 
+LOG.info(f"Using {MONGO_URL} as datalogger URI")
 
 class MongoDataLogger:
     def __init__(self):
