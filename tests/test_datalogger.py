@@ -1,14 +1,33 @@
+import datetime
+import unittest.mock as mock
+import mongomock
+import pymongo
+
+import sensors
 import datalogger
+import pytest
+import queue
 
-def test_datalogger():
-    dl = datalogger.DataLogger()
 
-    dl.log()
+@pytest.fixture
+def mock_sensor():
+    return mock.MagicMock(autospec=sensors.BaseSensor)
+
+
+@pytest.fixture
+def mock_controller():
+    return mock.MagicMock(autospec=sensors.BaseSensor)
+
+
+def test_init():
+    dl = datalogger.MongoDataLogger()
+    assert isinstance(dl._log_queue, queue.Queue)
+
 
 @mock.patch("concurrent.futures.ThreadPoolExecutor")
-@mock.patch("main.log_to_mongo")
-@mock.patch("main.datetime")
-def test_log(mock_datetime, log_to_mongo, mock_threads, mock_sensor, mock_controller):
+@mock.patch("datalogger.datetime")
+def test_datalogger(mock_datetime, mock_threadpool):
+    dl = datalogger.MongoDataLogger()
     mock_sensor.value = 10
     mock_sensor.name = "sensor"
     mock_controller.value = 0
@@ -16,32 +35,43 @@ def test_log(mock_datetime, log_to_mongo, mock_threads, mock_sensor, mock_contro
 
     times = []
     q = queue.Queue()
-    for _ in range(main.LOG_BATCH_SIZE):
+    dl._log_queue = q
+    for _ in range(datalogger.LOG_BATCH_SIZE):
         times.append(datetime.datetime.now())
         mock_datetime.datetime.now.return_value = times[-1]
-        main.log(mock_sensor, mock_controller)
-        q.put({
+        dl.log(sensors=[mock_sensor], controllers=[mock_controller])
+        q.put(
+            {
                 "timestamp": times[-1],
                 "controllers": {"controller": {"value": 0}},
                 "sensors": {"sensor": {"value": 10}},
-            })
+            }
+        )
 
-    mock_threads.submit.assert_called_with(main.log_to_mongo, q)
+    mock_threadpool.return_value.submit.assert_called_with(dl._log_to_mongo, q)
+
 
 @mongomock.patch(on_new="create")
 def test_log_to_mongo():
+    dl = datalogger.MongoDataLogger()
     times = range(10)
     q = queue.Queue()
 
-    [q.put({
+    [
+        q.put(
+            {
                 "timestamp": t,
                 "controllers": {"controller": {"value": 0}},
                 "sensors": {"sensor": {"value": 10}},
-            }) for t in times]
+            }
+        )
+        for t in times
+    ]
 
-    main.log_to_mongo(q)
+    dl._log_to_mongo(q)
 
-    inserts = mongomock.MongoClient().greenhouse.data.find({})
+    inserts = list(pymongo.MongoClient(datalogger.MONGO_URL).greenhouse.data.find())
 
+    assert len(inserts) == 10
     for i, insert in enumerate(inserts):
         assert insert["timestamp"] == times[i]

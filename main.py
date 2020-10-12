@@ -2,6 +2,7 @@ import datetime
 import time
 import logging
 
+import datalogger
 import sensors
 import controllers
 import wiringpi
@@ -15,12 +16,10 @@ import pigpio
 import threading
 import atexit
 import queue
-import pymongo
 import os
-import concurrent.futures
 
 logging.basicConfig(
-    level=logging.INFO, format="[{asctime}] {levelname} - {message}", style="{"
+    level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
 )
 
 LOG = logging.getLogger(__name__)
@@ -42,6 +41,7 @@ LOG_BATCH_SIZE = 10
 
 MONGO_URL = os.environ.get("MONGO_URL", "localhost")
 
+
 class Loop(threading.Thread):
     def __init__(
         self, event: threading.Event, target: typing.Callable, *args, **kwargs
@@ -58,6 +58,8 @@ class Loop(threading.Thread):
 
 
 STOP_FLAG = threading.Event()
+
+data_logger = datalogger.MongoDataLogger()
 
 
 def main() -> None:
@@ -80,11 +82,7 @@ def main() -> None:
     LOG.info("Setting up ambient light sensor...")
     SPI = Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)
     ambient_light = sensors.MCPSensor(
-        name="ambient_light",
-        mcp3xxx=Adafruit_MCP3008.MCP3008(
-            spi=SPI
-        ),
-        channel=0,
+        name="ambient_light", mcp3xxx=Adafruit_MCP3008.MCP3008(spi=SPI), channel=0,
     )
 
     LOG.info("Setting up DS18B20 sensors...")
@@ -158,61 +156,7 @@ def process(
     for controller in controllers:
         controller.control()
 
-    if (datetime.datetime.now() - timers["log"]).seconds > LOG_INTERVAL:
-        timers["log"] = datetime.datetime.now()
-        log(*sensors, *controllers)
-
-
-def log(*args) -> None:
-    print("herp")
-    def ddict():
-        return collections.defaultdict(ddict)
-
-    log_entry = ddict()
-
-    def get_log_entry_from_args():
-        for item in args:
-            if isinstance(item, controllers.BaseController):
-                log_entry["controllers"][item.name]["value"] = item.value
-
-            if isinstance(item, sensors.BaseSensor):
-                log_entry["sensors"][item.name]["value"] = item.value
-
-
-        log_entry["timestamp"] = datetime.datetime.now()
-
-        return log_entry
-
-    for _ in range(LOG_BATCH_SIZE - 1):
-        log_entry = get_log_entry_from_args()
-        LOG_QUEUE.put(log_entry)
-
-        yield
-
-    log_entry = get_log_entry_from_args()
-
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    executor.submit(log_to_mongo, LOG_QUEUE)
-
-
-
-def log_to_mongo(q: queue.Queue):
-    client = pymongo.MongoClient(MONGO_URL)
-
-    log_items = []
-
-    while True:
-        try:
-            log_items.append(q.get_nowait())
-        except queue.Empty:
-            break
-
-    if len(log_items) > 0:
-        LOG.debug(f"Inserting {len(log_items)} entries to db...")
-        client.greenhouse.data.insert_many(log_items)
-
-    else:
-        LOG.warning("No items to insert into db!")
+    data_logger.log(sensors=sensors, controllers=controllers)
 
 
 if __name__ == "__main__":

@@ -4,18 +4,20 @@ import main
 import sensors.base_sensor
 import controllers.base_controller
 import pytest
-import datetime
-import queue
-import mongomock
+
 
 @pytest.fixture
 def mock_sensor():
-    return mock.MagicMock(spec=sensors.base_sensor.BaseSensor)
+    s = mock.MagicMock(spec=sensors.base_sensor.BaseSensor)
+    s.name = "sensor"
+    return s
 
 
 @pytest.fixture
 def mock_controller():
-    return mock.MagicMock(spec=controllers.base_controller.BaseController)
+    c = mock.MagicMock(spec=controllers.base_controller.BaseController)
+    c.name = "controller"
+    return c
 
 
 @mock.patch("main.open", new=mock.MagicMock())
@@ -23,6 +25,7 @@ def test_process(mock_sensor, mock_controller):
     mock_sensor.value = 10
     mock_controller.value = 0
     main.process(sensors=[mock_sensor], controllers=[mock_controller])
+
 
 @mock.patch(
     "sensors.ds18b20.DS18B20._check_device_exists",
