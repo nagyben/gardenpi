@@ -19,7 +19,7 @@ import queue
 import os
 
 logging.basicConfig(
-    level=logging.DEBUG, format="[{asctime}] {levelname} - {message}", style="{"
+    level=logging.INFO, format="[{asctime}] {levelname} - {message}", style="{"
 )
 
 LOG = logging.getLogger(__name__)

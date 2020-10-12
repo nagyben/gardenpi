@@ -16,6 +16,7 @@ LOG = logging.getLogger(__name__)
 LOG_BATCH_SIZE = 10
 MONGO_URL = os.environ.get("MONGO_URL", "localhost")
 
+
 class MongoDataLogger:
     def __init__(self):
         self._log_queue = queue.Queue()
