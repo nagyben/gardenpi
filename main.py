@@ -54,19 +54,39 @@ STOP_FLAG = threading.Event()
 
 def main() -> None:
     LOG.info("Setting up BME280...")
-    bme280_device = bme280.BME280(i2c_dev=smbus2.SMBus(1))
-    t_bme280 = sensors.BME280_T(name="t_bme280", bme280_device=bme280_device)
-    pressure = sensors.BME280_P(name="pressure", bme280_device=bme280_device)
-    humidity = sensors.BME280_H(name="humidity", bme280_device=bme280_device)
+    i2c_dev = smbus2.SMBus(1)
+    bme280_device_internal = bme280.BME280(i2c_dev=i2c_dev)
+    bme280_device_external = bme280.BME280(i2c_dev=i2c_dev)
+    t_bme280_internal = sensors.BME280_T(
+        name="t_bme280", bme280_device=bme280_device_internal
+    )
+    pressure_internal = sensors.BME280_P(
+        name="pressure", bme280_device=bme280_device_internal
+    )
+    humidity_internal = sensors.BME280_H(
+        name="humidity", bme280_device=bme280_device_internal
+    )
 
-    LOG.info("Stabilizing BME280...")
+    t_bme280_external = sensors.BME280_T(
+        name="t_bme280_external", bme280_device=bme280_device_external
+    )
+    humidity_external = sensors.BME280_T(
+        name="humidity_external", bme280_device=bme280_device_external
+    )
+
+    LOG.info("Stabilizing sensors...")
+    stabilization_sensors = [
+        t_bme280_internal,
+        pressure_internal,
+        humidity_internal,
+        t_bme280_external,
+        humidity_external,
+    ]
     for i in range(3):
-        for sensor in [t_bme280, pressure, humidity]:
+        for sensor in stabilization_sensors:
             sensor.update()
 
-        LOG.info(
-            f"{' '.join(str(sensor.value) for sensor in [t_bme280, pressure, humidity])}"
-        )
+        LOG.info(f"{' '.join(str(sensor.value) for sensor in stabilization_sensors)}")
         time.sleep(1)
 
     LOG.info("Setting up ambient light sensor...")
@@ -87,7 +107,7 @@ def main() -> None:
 
     LOG.info("Setting up heater controller...")
     heater_controller = controllers.HeaterController(
-        name="heater", control_pin=11, sensor=t_bme280
+        name="heater", control_pin=11, sensor=t_bme280_internal
     )
     heater_controller.setpoint = 18
 
@@ -98,8 +118,8 @@ def main() -> None:
     fan_controller = controllers.FanController(
         name="fan",
         control_pin=15,
-        humidity_sensor=humidity,
-        temperature_sensor=t_bme280,
+        humidity_sensor=humidity_internal,
+        temperature_sensor=t_bme280_internal,
         pi=pi,
     )
 
@@ -118,7 +138,15 @@ def main() -> None:
     looper = Loop(
         event=STOP_FLAG,
         target=process,
-        sensors=[*t_ds18b20, t_bme280, pressure, humidity, ambient_light],
+        sensors=[
+            *t_ds18b20,
+            t_bme280_internal,
+            pressure_internal,
+            humidity_internal,
+            ambient_light,
+            t_bme280_external,
+            humidity_external,
+        ],
         controllers=[heater_controller, fan_controller, vent_controller],
     )
     looper.start()
