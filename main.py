@@ -125,6 +125,7 @@ def main() -> None:
 
     fan_controller.setpoint = 60
     fan_controller.setpoint_temp = 20
+    fan_controller.set_external_humidity_sensor(humidity_external)
 
     LOG.info("Setting up vent controller...")
     vent_controller = controllers.VentController(
