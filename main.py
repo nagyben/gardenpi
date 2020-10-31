@@ -56,7 +56,7 @@ def main() -> None:
     LOG.info("Setting up BME280...")
     i2c_dev = smbus2.SMBus(1)
     bme280_device_internal = bme280.BME280(i2c_dev=i2c_dev)
-    bme280_device_external = bme280.BME280(i2c_dev=i2c_dev)
+    bme280_device_external = bme280.BME280(i2c_dev=i2c_dev, i2c_addr=0x77)
     t_bme280_internal = sensors.BME280_T(
         name="t_bme280", bme280_device=bme280_device_internal
     )
