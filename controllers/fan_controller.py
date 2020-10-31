@@ -1,3 +1,4 @@
+from typing import Optional
 from controllers.base_controller import BaseController
 from sensors.base_sensor import BaseSensor
 import pigpio
@@ -12,6 +13,7 @@ class FanController(BaseController):
     _temperature_sensor: BaseSensor
     _auto: bool = True
     _setpoint_temp: float
+    _external_humidity_sensor: Optional[BaseSensor] = None
 
     def __init__(
         self,
@@ -45,6 +47,12 @@ class FanController(BaseController):
             fan_duty_t = self._pid_t(self._temperature_sensor.value)
             fan_duty_h = self._pid_h(self._humidity_sensor.value)
 
+            if (
+                self._external_humidity_sensor
+                and self._external_humidity_sensor.value > self._humidity_sensor.value
+            ):
+                fan_duty_h = 0
+
             fan_duty = max(fan_duty_t, fan_duty_h)
 
             LOG.debug(f"Fan duty: {fan_duty}")
@@ -66,3 +74,6 @@ class FanController(BaseController):
     @setpoint_temp.setter
     def setpoint_temp(self, setpoint: float) -> None:
         self._setpoint_temp = setpoint
+
+    def set_external_humidity_sensor(self, sensor: BaseSensor) -> None:
+        self._external_humidity_sensor = sensor

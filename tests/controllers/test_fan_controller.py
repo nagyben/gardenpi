@@ -1,3 +1,4 @@
+from sensors.base_sensor import BaseSensor
 from controllers.fan_controller import FanController
 import pytest
 import unittest.mock as mock
@@ -75,6 +76,19 @@ def test_fan_controller(fc):
     fc._humidity_sensor.value = 80
     fc.control()
     assert fc.value > 0
+
+
+def test_fan_controller_with_external_humidity_sensor(fc):
+    fc.setpoint = 60
+    fc.setpoint_temp = 25
+    external_sensor = mock.MagicMock(autospec=BaseSensor)
+    fc.set_external_humidity_sensor(external_sensor)
+    fc._humidity_sensor.value = 70
+    fc._temperature_sensor.value = 20
+    fc._external_humidity_sensor.value = 80
+    fc.control()
+
+    assert fc.value == 0
 
 
 def test_set(fc):
