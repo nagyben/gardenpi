@@ -70,7 +70,7 @@ def main() -> None:
     t_bme280_external = sensors.BME280_T(
         name="t_bme280_external", bme280_device=bme280_device_external
     )
-    humidity_external = sensors.BME280_T(
+    humidity_external = sensors.BME280_H(
         name="humidity_external", bme280_device=bme280_device_external
     )
 
